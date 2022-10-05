@@ -32,7 +32,8 @@ passport.use(new GitHubStrategy({
   clientID: GITHUB_CLIENT_ID,
   clientSecret: GITHUB_CLIENT_SECRET,
   callbackURL: "http://localhost:3000/auth/github/callback"
-}, (accessToken, refreshToken, profile, done) => {
+}, 
+(accessToken, refreshToken, profile, done) => {
   return done(null, profile);
 }))
 
@@ -89,9 +90,15 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-app.get('/auth/github', passport.authenticate('github', { scope: ['user']}),);
-app.get('auth/github/callback', passport.authenticate('github', { failureRedirect: '/login', successRedirect: '/' }))
+app.get("/auth/github", passport.authenticate("github", { scope: ["user"] }));
 
+app.get(
+  "/auth/github/callback",
+  passport.authenticate("github", {
+    failureRedirect: "/login",
+    successRedirect: "/",
+  })
+);
 
 /*
  * Listener
@@ -103,7 +110,7 @@ app.listen(PORT, () => console.log(`Listening on ${PORT}`));
  * ensureAuthenticated Callback Function
 */
 
-const ensureAuthenticated = (req, res, next) => {
+function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next() };
   res.redirect('/login');
 }
